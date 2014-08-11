@@ -9,7 +9,6 @@ argo()
     handle('request', function(env, next) { 
       env.response.statusCode = 200;
       env.response.body = '<xml></xml>';
-      env.response.header('Content-Type','text/xml');
       next(env);
     });
   }).listen(port);
