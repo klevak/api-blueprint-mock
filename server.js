@@ -5,7 +5,7 @@ var argo = require('argo');
 
 
 argo()
-  .post('^/dogs$', function(handle) {
+  .post('^/eda$', function(handle) {
     handle('request', function(env, next) { 
       env.response.statusCode = 200;
       env.response.body = '<xml></xml>';
