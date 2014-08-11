@@ -5,7 +5,7 @@
   "author": "Evan Cordell <cordell.evan@gmail.com>",
   "main": "server.js",
   "dependencies": {
-    
-    
+    "argo":"0.4.9"
+
   }
 }
