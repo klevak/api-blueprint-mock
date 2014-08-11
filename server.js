@@ -32,7 +32,7 @@ argo()
   .route('^/dogs$', options, function(handle) {
     handle('request', function(env, next) {
       env.response.statusCode = 200;
-      env.response..header('Content-Type','text/xml').send(xml)
+      env.response.header('Content-Type','text/xml').send(xml)
       //env.response.body = xml;
       next(env);
     });
