@@ -26,10 +26,9 @@ var xml = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/enve
 </soapenv:Envelope>
 ';
 
-var options = { methods: ['GET','POST'] };
 
 argo()
-  .get('^/dogs$', options, function(handle) {
+  .get('^/dogs$', function(handle) {
     handle('request', function(env, next) {
       env.response.statusCode = 200;
       env.response.body = 'hello';
