@@ -32,8 +32,7 @@ argo()
   .get('^/dogs$', options, function(handle) {
     handle('request', function(env, next) {
       env.response.statusCode = 200;
-      env.response.header('Content-Type','text/xml')
-      //env.response.body = xml;
+      env.response.body = 'hello';
       next(env);
     });
   }).listen(port);
