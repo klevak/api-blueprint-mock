@@ -5,6 +5,7 @@
   "author": "Evan Cordell <cordell.evan@gmail.com>",
   "main": "server.js",
   "dependencies": {
-    "protagonist": "~0.12.0"
+    
+    
   }
 }
