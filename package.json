@@ -1,0 +1,10 @@
+{
+  "name": "api-blueprint-mock",
+  "version": "0.1.0",
+  "description": "A mock server generated from your API Blueprint.",
+  "author": "Evan Cordell <cordell.evan@gmail.com>",
+  "main": "server.js",
+  "dependencies": {
+    "protagonist": "~0.12.0"
+  }
+}
