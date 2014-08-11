@@ -29,10 +29,10 @@ var xml = '<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/enve
 var options = { methods: ['GET','POST'] };
 
 argo()
-  .route('^/dogs$', options, function(handle) {
+  .get('^/dogs$', options, function(handle) {
     handle('request', function(env, next) {
       env.response.statusCode = 200;
-      env.response.header('Content-Type','text/xml').send(xml)
+      env.response.header('Content-Type','text/xml')
       //env.response.body = xml;
       next(env);
     });
