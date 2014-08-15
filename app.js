@@ -23,12 +23,14 @@ var async = require('async');
  
 var authstring = "access_token=" + access_token; 
 var qlstring = "ql=select * where isError = true";
+var cursor = "";
+var limit = "10";
  
 var total = 0;
 var startTime = Date.now();
 
-function getRecords(){
-    request.get(as_basepath + collection + "?" + qlstring + "&limit=10&" + authstring, function(e, r, data) {
+function getRecords(cursor){
+    request.get(as_basepath + collection + "?" + qlstring + "&limit=" + limit +  "&cursor=" + cursor + "&" + authstring, function(e, r, data) {
 
         json = JSON.parse(data);
         if (json.count === undefined) {
@@ -37,41 +39,42 @@ function getRecords(){
          }
         console.log("Got " + json.count + " entities");
 
-        if (json.count > 0)
-        {
+        if (json.count > 0) {
+
             var records = [];
             for (var i = 0; i < json.count; i++) {
-
-                console.log(json.entities[i].uuid);
-                
-                var getFunction = makeGetFunction(json.entities[i].uuid);
-                
-                records.push(getFunction);
-            
-
+                var postFunction = makePostNotification(json.entities[i]);
+                records.push(postFunction);
+                total ++;
             }
-            
-            async.parallel(records,function(err, results) {
-                    console.log("Finished batch; re-running");
-                    setTimeout(function() {
-                        //getRecords();
-                    }, 600); // Mandatory, since it seems to not retrieve entities if you make a request in < 600ms
-                    return;
-                });
-            
-        }
-        else
-        {
+
+            if(json.cursor !== undefined){
+                console.log("Next batch starting at cursor: " + json.cursor);
+                getNotifications(records);
+                getRecords(json.cursor);
+            }
+
+        } else {
             console.log("No entities, exiting");
             var endTime = Date.now();
             console.log("Found a total of " + total + " entities in " + minutesFromMs(endTime - startTime));
             process.exit(0);
         }
 
-
     });
+
 }
- 
+
+
+function getNotifications(records){
+    async.parallel(records,
+        function(err, results) {
+            console.log("Finished batch; re-running");
+        }
+    );
+
+}
+
 function deleteRecords() {
     console.log(as_basepath);
 
@@ -123,6 +126,44 @@ function makeDeleteFunction(uuid) {
     };
 }
 
+function makePostNotification(json) {
+    return function(callback) {
+        console.log("post notification " + json.uuid);
+        request.post("http://edatest.azurewebsites.net/eda", function(e, r, data) {
+            total++;
+            
+            console.log("notifications response : " + r.statusCode + " : " + data);
+
+            if(r.statusCode == 200){
+                json.isError = "false";
+
+
+
+                /*
+
+                // I'll try a PUT when I have test data
+                request.put({
+                        url: as_basepath + collection + "/" + uuid + "?" + authstring,
+                        body: json
+                    }, function(e, r, data) {
+                        total++;
+                    
+                    });
+                */
+                request.get(as_basepath + collection + "/" + json.uuid + "?" + authstring, function(e, r, data) {
+                    console.log(data);
+                });
+
+
+
+            }
+
+            callback(r.statusCode);
+        });
+    };
+}
+
+
 function makeGetFunction(uuid) {
     return function(callback) {
         console.log("get " + uuid);
@@ -137,7 +178,7 @@ function minutesFromMs(time) {
     return Math.round(((time % 86400000) % 3600000) / 60000).toString() + " minutes"; // minutes
 }
  
-getRecords();
+getRecords(cursor);
 
 //deleteRecords();
 
