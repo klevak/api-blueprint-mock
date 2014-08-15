@@ -1,0 +1,34 @@
+	var client_start_time, client_end_time = context.getVariable('system.timestamp');
+	
+	var headers = context.getVariable("llbean.headers"),
+
+        client_start_time = context.getVariable('system.timestamp');
+        data = processData(request.content);
+		client_end_time = context.getVariable('system.timestamp');
+  
+  		var _process_time = (client_end_time - client_start_time) + ' ms';
+  
+  		client_start_time = context.getVariable('system.timestamp');
+  		data = prepareRequest(data,headers); // Prepare request based on header values and data
+		client_end_time = context.getVariable('system.timestamp');
+
+  		var _prepare_time = (client_end_time - client_start_time) + ' ms';
+   
+  		client_start_time = context.getVariable('system.timestamp');
+		getCallout(JSON.stringify(data));
+		client_end_time = context.getVariable('system.timestamp');
+    	
+  		var _callout_time = (client_end_time - client_start_time) + ' ms';
+  
+  		client_start_time = context.getVariable('system.timestamp');
+  		data = prepareBaas(data, context.getVariable("calloutstatus"));
+  		client_end_time = context.getVariable('system.timestamp');
+
+  		var _baas_time = (client_end_time - client_start_time) + ' ms';
+  
+  		data._process_time = _process_time;
+  		data._prepare_time = _prepare_time;
+  		data._callout_time = _callout_time;
+  		data._baas_time = _baas_time;
+  
+        request.content = JSON.stringify(data);
