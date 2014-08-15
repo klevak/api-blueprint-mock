@@ -12,8 +12,8 @@
  
 // Config
  
-var access_token = "YWMtwMnb-iGIEeSfoFHasknjbAAAAUfqd1oItT1I2curL5Y0Js5TQh1nDn_fpnM";
-var as_basepath = "http://api.llbean.com/appservices/v1/llbean-baas/sandbox/"; // You need the trailing slash!
+var access_token = "";
+var as_basepath = ""; // You need the trailing slash!
 var collection = "visitors";
  
 // End Config
