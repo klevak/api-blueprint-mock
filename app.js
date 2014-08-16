@@ -24,7 +24,7 @@ var async = require('async');
 var authstring = "access_token=" + access_token; 
 var qlstring = "ql=select * where isError = true";
 var cursor = "";
-var limit = "10";
+var limit = "100";
  
 var total = 0;
 var startTime = Date.now();
@@ -50,8 +50,14 @@ function getRecords(cursor){
 
             if(json.cursor !== undefined){
                 console.log("Next batch starting at cursor: " + json.cursor);
+                
                 getNotifications(records);
                 getRecords(json.cursor);
+
+            } else if (json.count < limit){
+                console.log("Process remaining " + json.count);
+                getNotifications(records);
+
             }
 
         } else {
@@ -129,6 +135,7 @@ function makeDeleteFunction(uuid) {
 function makePostNotification(json) {
     return function(callback) {
         console.log("post notification " + json.uuid);
+
         request.post("http://edatest.azurewebsites.net/eda", function(e, r, data) {
             total++;
             
@@ -136,24 +143,17 @@ function makePostNotification(json) {
 
             if(r.statusCode == 200){
                 json.isError = "false";
+                json.responseCode = r.statusCode;
 
+                
+                var opts = {
+                    url : as_basepath + collection + "/" + json.uuid + "?" + authstring,
+                    body : JSON.stringify(json)
+                };
 
-
-                /*
-
-                // I'll try a PUT when I have test data
-                request.put({
-                        url: as_basepath + collection + "/" + uuid + "?" + authstring,
-                        body: json
-                    }, function(e, r, data) {
-                        total++;
-                    
+                request.put(opts, function(e, r, data) {
+                        console.log("PUT suceeded : " + json.uuid);
                     });
-                */
-                request.get(as_basepath + collection + "/" + json.uuid + "?" + authstring, function(e, r, data) {
-                    console.log(data);
-                });
-
 
 
             }
